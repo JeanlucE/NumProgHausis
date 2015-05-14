@@ -422,11 +422,6 @@ public class Gleitpunktzahl {
 	 * gespeichert, normiert, und dieses wird zurueckgegeben.
 	 */
 	public Gleitpunktzahl add(Gleitpunktzahl r) {
-		/*
-		 * x: hier ist die Operation add zu implementieren. Verwenden Sie die
-		 * Funktionen normalisiere und denormalisiere.
-		 * Achten Sie auf Sonderfaelle!
-		 */
 		
 		//Sonderfall NaN und null
 		if(r.isNaN() || this.isNaN() || r == null)
@@ -479,6 +474,7 @@ public class Gleitpunktzahl {
 		Gleitpunktzahl b = new Gleitpunktzahl(r);
 		denormalisiere(a, b);
 
+/*<<<<<<< HEAD
         //konvertiere zu long
 		long aLong = a.vorzeichen ? -a.mantisse : a.mantisse;
         long bLong = b.vorzeichen ? -b.mantisse : b.mantisse;
@@ -513,6 +509,51 @@ public class Gleitpunktzahl {
 			result.normalisiere();
         }
         return result;
+=======                        */
+		//überprüfe welcher summand |groesser|
+		int cmp = a.compareAbsTo(b);
+		
+		if(cmp == 0)//gleich gross
+		{
+			//nicht gleiches vorzeichen
+			if(a.vorzeichen != b.vorzeichen)
+			{
+				Gleitpunktzahl result = new Gleitpunktzahl();
+				result.setNull();
+				return result;
+			}
+			else//a + a = 2*a
+			{
+				Gleitpunktzahl result = new Gleitpunktzahl(a);
+				result.mantisse = result.mantisse << 1;//*=2
+				result.normalisiere();
+				return result;
+			}
+		}
+		else if(cmp > 0)//|a| > |b|
+		{
+			Gleitpunktzahl result = new Gleitpunktzahl();
+			result.vorzeichen = a.vorzeichen;//übernehme vorzeichen von a
+			result.exponent = a.exponent;//übernehme exponent von a
+						
+			if((a.vorzeichen != b.vorzeichen))//-a + b or a - b
+			{
+				result.mantisse = a.mantisse - b.mantisse;
+				result.normalisiere();
+				return result;
+			}
+			else//a + b or -a -(-b) = -(a+b)
+			{
+				result.mantisse = a.mantisse + b.mantisse;
+				result.normalisiere();
+				return result;
+			}
+			
+		}
+		else
+		{
+			return b.add(a);
+		}
 	}
 
 	/**
@@ -522,11 +563,6 @@ public class Gleitpunktzahl {
 	 * gespeichert, normiert, und dieses wird zurueckgegeben.
 	 */
 	public Gleitpunktzahl sub(Gleitpunktzahl r) {
-		/*
-		 * x: hier ist die Operation sub zu implementieren. Verwenden Sie die
-		 * Funktionen normalisiere und denormalisiere.
-		 * Achten Sie auf Sonderfaelle!
-		 */
 		
 		//Sonderfall NaN und null
 		if(r.isNaN() || this.isNaN() || r == null)
