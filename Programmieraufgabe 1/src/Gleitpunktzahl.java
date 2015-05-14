@@ -197,10 +197,11 @@ public class Gleitpunktzahl {
 				else
 					s.append('0');
 			}
+			//hab hier etwas verändert
 			s.append(" * 2^(");
-			s.append(this.exponent);
-			s.append("-");
-			s.append(expOffset);
+			s.append(this.exponent - expOffset);
+			/*s.append("-");
+			s.append(expOffset); */
 			s.append(")");
 		}
 		return s.toString();
@@ -290,7 +291,6 @@ public class Gleitpunktzahl {
 	 */
 	public void normalisiere() {
 		/*
-		 * TODO: hier ist die Operation normalisiere zu implementieren.
 		 * Beachten Sie, dass die Groesse (Anzahl der Bits) des Exponenten
 		 * und der Mantisse durch sizeExponent bzw. sizeMantisse festgelegt
 		 * ist.
@@ -344,7 +344,7 @@ public class Gleitpunktzahl {
 			}
 			else
 			{
-				this.exponent--;//passe exponent entsprechend an
+				this.exponent++;//passe exponent entsprechend an
 			}
 		}
 		
@@ -357,7 +357,15 @@ public class Gleitpunktzahl {
 			if(mantisse > maxMant)
 			{
 				mantisse = mantisse >> 1;
-				this.exponent++;//passe exponent entsprechend an
+				//check ob oberes Exponenten-Limit
+				if(exponent == maxExponent)
+				{
+					this.setInfinite(false);//+infinity
+				}
+				else
+				{
+					this.exponent++;//passe exponent entsprechend an
+				}
 			}
 			
 		}		
@@ -373,6 +381,38 @@ public class Gleitpunktzahl {
 		/*
 		 * TODO: hier ist die Operation denormalisiere zu implementieren.
 		 */
+
+		//sonderfälle wofür wir nicht denormalisieren müssen
+		if(a == null || b == null || a.isInfinite() || b.isInfinite() || a.isNaN() || b.isNaN() || a.isNull() || b.isNull())
+		{
+			return;
+		}
+
+		//exponenten sind schon gleich
+		 if(a.compareAbsTo(b) == 0 || a.exponent == b.exponent)
+		 {
+			 return;
+		 }
+
+		 //suche die betragsmäßig größere zahl
+		Gleitpunktzahl greater = a.compareAbsTo(b) > 0 ? a : b;
+		Gleitpunktzahl lesser = greater == a ? b : a;
+		boolean roundUp = false;
+
+		//verschiebe kleinere zahl bis exponent gleich ist
+		while(lesser.exponent < greater.exponent)
+		{
+			roundUp = (1 & lesser.mantisse) == 1;
+
+			lesser.mantisse = lesser.mantisse >> 1;
+			lesser.exponent++;
+		}
+
+		//gegebenenfalls aufrunden
+		if(roundUp)
+		{
+			lesser.mantisse += 1;
+		}
 	}
 
 	/**

@@ -23,7 +23,7 @@ public class Test_Gleitpunktzahl {
 		 * Verglichen werden die BitFelder fuer Mantisse und Exponent und das
 		 * Vorzeichen
 		 */
-		Gleitpunktzahl.setSizeMantisse(4);
+		Gleitpunktzahl.setSizeMantisse(23);
 		Gleitpunktzahl.setSizeExponent(8);
 
 		Gleitpunktzahl x;
@@ -50,9 +50,18 @@ public class Test_Gleitpunktzahl {
 
 			
 			//teste normalisiere
-			System.out.println("Eigener Test f�r normalisiere():");
-			y = new Gleitpunktzahl(3.1415);
+			System.out.println("Eigener Test für normalisiere():");
+			y = new Gleitpunktzahl(590000);
+            System.out.println(y.toDouble());
 
+            //teste denormalisiere
+            System.out.println("Eigener Test für denormalisiere():");
+            Gleitpunktzahl z = new Gleitpunktzahl(18);
+            System.out.println(Integer.toBinaryString(y.mantisse) + ", " + (y.exponent-127));
+            Gleitpunktzahl.denormalisiere(y, z);
+
+            System.out.println(Integer.toBinaryString(y.mantisse) + ", " + (y.exponent-127));
+            System.out.println(Integer.toBinaryString(z.mantisse) + ", " + (z.exponent-127));
 		} catch (Exception e) {
 			System.out.print("Exception bei der Auswertung des Ergebnis!!\n");
 		}
@@ -85,6 +94,7 @@ public class Test_Gleitpunktzahl {
 			 */
 
 			System.out.println("\n\nEIGENE TESTS EINFÜGEN!!!!!!!\n\n");
+
 
 		} catch (Exception e) {
 			System.out.print("Exception bei der Auswertung des Ergebnis!!\n");
