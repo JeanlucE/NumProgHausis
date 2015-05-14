@@ -46,7 +46,24 @@ public class FastMath {
 	public static Gleitpunktzahl invSqrt(Gleitpunktzahl x) {
 
 		/* TODO: hier den "fast inverse square root" Algorithmus implementieren */
-		return new Gleitpunktzahl();
+		
+		//Spezialfaelle abfangen
+		if(x == null || x.isInfinite() || x.isNull() || x.isNaN() || x.vorzeichen)
+		{
+			Gleitpunktzahl result = new Gleitpunktzahl();
+			result.setNaN();
+			
+			return result;
+		}
+		
+		//Bitfolge uminterpretieren
+		int integerRep = gleitpunktzahlToIEEE(x);
+		
+		integerRep = integerRep >> 1;//durch 2 teilen
+		
+		int resultInt = FastMath.MAGIC_NUMBER - integerRep;//von Magic number abziehen
+				
+		return FastMath.iEEEToGleitpunktzahl(resultInt);//Interpretiere wieder als Gleitpunktzahl
 	}
 
 	/**
