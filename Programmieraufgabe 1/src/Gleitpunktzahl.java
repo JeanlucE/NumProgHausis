@@ -478,48 +478,41 @@ public class Gleitpunktzahl {
 		Gleitpunktzahl a = new Gleitpunktzahl(this);
 		Gleitpunktzahl b = new Gleitpunktzahl(r);
 		denormalisiere(a, b);
-		
-		
-		/*
-		//überprüfe welcher summand |groesser|
-		int cmp = this.compareAbsTo(r);
-		
-		if(cmp == 0)//gleich gross
-		{
-			//nicht gleiches vorzeichen
-			if(this.vorzeichen != r.vorzeichen)
-			{
-				Gleitpunktzahl result = new Gleitpunktzahl();
-				result.setNull();
-				return result;
-			}
-			else//A + A = 2*A
-			{
-				Gleitpunktzahl result = new Gleitpunktzahl(this);
-				result.mantisse = result.mantisse << 1;//*=2
-				result.normalisiere();
-				return result;
-			}
-		}
-		else if(cmp > 0)//this ist groesser
-		{
-			
-			
-			Gleitpunktzahl result = new Gleitpunktzahl();
-			result.vorzeichen = this.vorzeichen;//übernehme vorzeichen des größeren
-			
-			//-this + r
-			if(this.vorzeichen && !r.vorzeichen)
-			{
-			}
-			
-			
-		}*/
-		
-		
-		
-		
-		
+
+        //konvertiere zu long
+		long aLong = a.vorzeichen ? -a.mantisse : a.mantisse;
+        long bLong = b.vorzeichen ? -b.mantisse : b.mantisse;
+
+        //addiere
+        long longResult = aLong + bLong;
+        Gleitpunktzahl result = new Gleitpunktzahl();
+
+        result.exponent = a.exponent;
+
+        //addiere 2 zu große zahlen
+        if(longResult > Integer.MAX_VALUE)
+        {
+            result.setInfinite(false);
+        }
+        //addiere 2 zu kleine zahlen
+        else if (longResult < Integer.MIN_VALUE)
+        {
+            result.setInfinite(true);
+        }
+        else if(longResult == 0)
+        {
+            result.setNull();
+        }
+        //normaler fall
+        else
+        {
+            //setze vorzeichen
+            result.vorzeichen = longResult < 0;
+            //errechne mantisse
+            result.mantisse = (int) (longResult < 0 ? -longResult : longResult);
+			result.normalisiere();
+        }
+        return result;
 	}
 
 	/**
