@@ -24,7 +24,7 @@ public class Test_Gleitpunktzahl {
 		 * Vorzeichen
 		 */
 		Gleitpunktzahl.setSizeMantisse(4);
-		Gleitpunktzahl.setSizeExponent(2);
+		Gleitpunktzahl.setSizeExponent(8);
 
 		Gleitpunktzahl x;
 		Gleitpunktzahl y;
@@ -48,11 +48,10 @@ public class Test_Gleitpunktzahl {
 				System.out.println("    Richtiges Ergebnis\n");
 			}
 
-			/*************
-			 * Eigene Tests einfuegen
-			 */
-
-			System.out.println("\n\nEIGENE TESTS EINFÃœGEN!!!!!!!\n\n");
+			
+			//teste normalisiere
+			System.out.println("Eigener Test für normalisiere():");
+			y = new Gleitpunktzahl(3.1415);
 
 		} catch (Exception e) {
 			System.out.print("Exception bei der Auswertung des Ergebnis!!\n");

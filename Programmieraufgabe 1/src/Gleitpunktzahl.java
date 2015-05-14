@@ -297,23 +297,70 @@ public class Gleitpunktzahl {
 		 * Achten Sie auf Sonderfaelle!
 		 */
 		
+		
+		
 		//Sonderfall Null abfangen
 		if(mantisse == 0)
 		{
 			exponent = 0;
 			vorzeichen = false;
-		}
+			return;
+		}	
 		
+		//Errechne Position an der erste 1 stehen sollte
+		int highestBit = 1 << (sizeMantisse - 1);
+		//Berechne größte maximale Mantisse
+		int maxMant = (highestBit << 1) - 1;
 		
-		int bitMask = 0x80000000;
+		boolean roundUp = false;//aufrunden oder nicht?
 		
-		//shifte mantisse bis 1 an erster stelle
-		while((this.mantisse & bitMask) == 0)
+		//Ist Mantisse noch kleiner? (Vergleich mit 01000)
+		while(mantisse < highestBit)
 		{
 			mantisse = mantisse << 1;
-			this.exponent--;//passe exponent entsprechend an
+			
+			//check ob unteres Exponenten-Limit
+			if(exponent == 0)
+			{
+				this.setInfinite(true);//-infinity
+			}
+			else
+			{
+				this.exponent--;//passe exponent entsprechend an
+			}
 		}
 		
+		//Ist Mantisse gößer? (Vergleich mit 01111)
+		while(mantisse > maxMant)
+		{
+			roundUp = (1 & mantisse) == 1;//wir müssen nur aufrunden, wenn die abgeschnittene Zahl eine 1 war
+			
+			mantisse = mantisse >> 1;
+			
+			//check ob oberes Exponenten-Limit
+			if(exponent == maxExponent)
+			{
+				this.setInfinite(false);//+infinity
+			}
+			else
+			{
+				this.exponent--;//passe exponent entsprechend an
+			}
+		}
+		
+		//gegebenenfalls aufrunden
+		if(roundUp) 
+		{
+			mantisse += 1;
+			
+			//Stelle sicher, dass Mantisse durch Aufrunden nicht zu groß
+			if(mantisse > maxMant)
+			{
+				mantisse = mantisse >> 1;
+				this.exponent++;//passe exponent entsprechend an
+			}
+			
+		}		
 		
 	}
 
