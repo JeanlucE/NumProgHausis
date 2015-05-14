@@ -341,6 +341,8 @@ public class Gleitpunktzahl {
 		 * Achten Sie auf Sonderfaelle!
 		 */
 		
+		//0 handle special cases (0, inf)
+		
 		//1 check which number has the greater absolute value
 		
 		//2 denormalise the greater one so that both numbers have the same exponent
@@ -367,6 +369,19 @@ public class Gleitpunktzahl {
 		 * Funktionen normalisiere und denormalisiere.
 		 * Achten Sie auf Sonderfaelle!
 		 */
+		
+		//0 handle special cases (0, inf, =)
+		
+		//1 check which number has the greater absolute value
+		
+		//2 denormalise the greater one so that both numbers have the same exponent
+		
+		/*
+		 * 3 x = m1 * 2^e1  >  y = m2 * 2^e2 => 
+		 * m1 * 2^e1 - m2 * 2^e2 = (m1 * 2^(e1-e2) -m2) * 2^e2 
+		 */
+		
+		//normalize the resulting number
 		 
 		return new Gleitpunktzahl();
 	}
