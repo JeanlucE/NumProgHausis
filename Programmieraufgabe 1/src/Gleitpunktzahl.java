@@ -383,25 +383,99 @@ public class Gleitpunktzahl {
 	 */
 	public Gleitpunktzahl add(Gleitpunktzahl r) {
 		/*
-		 * TODO: hier ist die Operation add zu implementieren. Verwenden Sie die
+		 * x: hier ist die Operation add zu implementieren. Verwenden Sie die
 		 * Funktionen normalisiere und denormalisiere.
 		 * Achten Sie auf Sonderfaelle!
 		 */
+		Gleitpunktzahl output;
 		
-		//0 handle special cases (0, inf)
-		
-		//1 check which number has the greater absolute value
-		
-		//2 denormalise the greater one so that both numbers have the same exponent
+		//0 handle special cases (0, inf, NaN, +/-)
+		if(this.isNaN() || r.isNaN())
+		{
+			output = new Gleitpunktzahl();
+			output.setNaN();
+			return output;
+		}
+		else if(this.isNull())
+		{
+			return new Gleitpunktzahl(r);
+		}
+		else if(r.isNull())
+		{
+			return new Gleitpunktzahl(this);
+		}
+		else if(this.isInfinite() || r.isInfinite())
+		{
+			if(this.isInfinite())
+			{
+				if(r.isInfinite())
+				{
+					//both infinite
+					if(this.vorzeichen = r.vorzeichen)
+					{
+						return new Gleitpunktzahl(this);
+					}
+					else
+					{
+						//(+inf) + (-inf) = NaN
+						output = new Gleitpunktzahl();
+						output.setNaN();
+						return output;
+					}
+				}
+				else
+				{
+					//only this infinite
+					return new Gleitpunktzahl(this);
+				}
+			}
+			else
+			{
+				//only r infinite
+				return new Gleitpunktzahl(r);				
+			}
+		}
+		else if(this.vorzeichen != r.vorzeichen)
+		{
+			//(a + (-b)) = a - b
+			output = new Gleitpunktzahl(r);
+			output.vorzeichen = !output.vorzeichen;
+			
+			return this.sub(output);
+		}
 		
 		/*
-		 * 3 x = m1 * 2^e1  >  y = m2 * 2^e2 => 
-		 * m1 * 2^e1 + m2 * 2^e2 = m1 * 2^(e1-e2) * 2^e2 +m2 * 2^e2 = (m1 * 2^(e1-e2) +m2) * 2^e2 
+		 * from here on this and r are guaranteed to be
+		 * in the range of representable numbers and
+		 * to both be greater or both smaller than 0 
 		 */
 		
-		//normalize the resulting number
-
-		return new Gleitpunktzahl();
+		//1 check which number has the greater absolute value
+		boolean rGreater = this.compareAbsTo(r) < 0;
+		
+		//2 denormalize the greater one so that both numbers have the same exponent
+		Gleitpunktzahl greater = new Gleitpunktzahl(rGreater ? r : this),
+				lesser = new Gleitpunktzahl(rGreater ? this : r);
+		
+		denormalisiere(greater, lesser);
+		
+		/*
+		 * 3
+		 * x = m1 * 2^e1  >  y = m2 * 2^e2 => 
+		 * m1 * 2^e1 + m2 * 2^e2 = m1 * 2^(e1-e2) * 2^e2 +m2 * 2^e2 = (m1 * 2^(e1-e2) +m2) * 2^e2 
+		 */
+		output = new Gleitpunktzahl();
+		
+		output.mantisse = greater.mantisse + lesser.mantisse;
+		output.exponent = greater.exponent;
+		output.vorzeichen = greater.vorzeichen;
+		
+		//normalize checks for inf
+		
+		//normalize the resulting number.
+		output.normalisiere();
+		
+		return output;
 	}
 
 	/**
@@ -412,25 +486,112 @@ public class Gleitpunktzahl {
 	 */
 	public Gleitpunktzahl sub(Gleitpunktzahl r) {
 		/*
-		 * TODO: hier ist die Operation sub zu implementieren. Verwenden Sie die
+		 * x: hier ist die Operation sub zu implementieren. Verwenden Sie die
 		 * Funktionen normalisiere und denormalisiere.
 		 * Achten Sie auf Sonderfaelle!
 		 */
+		Gleitpunktzahl output;
 		
-		//0 handle special cases (0, inf, =)
-		
-		//1 check which number has the greater absolute value
-		
-		//2 denormalise the greater one so that both numbers have the same exponent
+		//0 handle special cases (0, inf, NaN, +/-)
+		if(this.isNaN() || r.isNaN())
+		{
+			output = new Gleitpunktzahl();
+			output.setNaN();
+			return output;
+		}
+		else if(this.isNull())//0 - r = -r
+		{
+			output = new Gleitpunktzahl(r);
+			output.vorzeichen = !output.vorzeichen;
+		}
+		else if(r.isNull())//x - 0 = x
+		{
+			return new Gleitpunktzahl(this);
+		}
+		else if(this.isInfinite() || r.isInfinite())
+		{
+			if(this.isInfinite())
+			{
+				if(r.isInfinite())
+				{
+					//both infinite
+					if(this.vorzeichen != r.vorzeichen)
+					{
+						return new Gleitpunktzahl(this);
+					}
+					else
+					{
+						//(+inf) - (+inf) = NaN
+						output = new Gleitpunktzahl();
+						output.setNaN();
+						return output;
+					}
+				}
+				else
+				{
+					//only this infinite
+					return new Gleitpunktzahl(this);
+				}
+			}
+			else
+			{
+				//only r infinite
+				//x - inf = -inf
+				output = new Gleitpunktzahl(r);
+				output.vorzeichen = !output.vorzeichen;
+				return output;
+			}
+		}
+		else if(this.vorzeichen != r.vorzeichen)//both are numbers
+		{
+			//(a - (-b)) = a + b
+			output = new Gleitpunktzahl(r);
+			output.vorzeichen = !output.vorzeichen;
+			
+			return this.add(output);
+		}
 		
 		/*
-		 * 3 x = m1 * 2^e1  >  y = m2 * 2^e2 => 
-		 * m1 * 2^e1 - m2 * 2^e2 = (m1 * 2^(e1-e2) -m2) * 2^e2 
+		 * from here on this and r are guaranteed to be
+		 * in the range of representable numbers and
+		 * to both be greater or both smaller than 0 
 		 */
 		
-		//normalize the resulting number
-		 
-		return new Gleitpunktzahl();
+		//1 check which number has the greater absolute value
+		boolean rGreater = this.compareAbsTo(r) < 0;
+		
+		//2 denormalize the greater one so that both numbers have the same exponent
+		Gleitpunktzahl greater = new Gleitpunktzahl(rGreater ? r : this),
+				lesser = new Gleitpunktzahl(rGreater ? this : r);
+		
+		denormalisiere(greater, lesser);
+		
+		/*
+		 * 3
+		 * x = m1 * 2^e1  >  y = m2 * 2^e2 => 
+		 * m1 * 2^e1 - m2 * 2^e2 = (m1 * 2^(e1-e2) - m2) * 2^e2 
+		 * m2 * 2^e2 - m1 * 2^e1 = (m2 - m1*2^(e1-e2)) * 2^e2
+		 */
+		output = new Gleitpunktzahl();
+		
+		if(rGreater)
+		{
+			output.mantisse = lesser.mantisse - greater.mantisse;
+		}
+		else
+		{
+			output.mantisse = greater.mantisse - lesser.mantisse;
+		}
+			
+		output.exponent = greater.exponent;
+		output.vorzeichen = greater.vorzeichen;
+		
+		//normalize checks for inf
+		
+		//normalize the resulting number.
+		output.normalisiere();
+		
+		return output;
 	}
 	
 	/**
