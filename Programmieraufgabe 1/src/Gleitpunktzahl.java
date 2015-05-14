@@ -296,6 +296,25 @@ public class Gleitpunktzahl {
 		 * ist.
 		 * Achten Sie auf Sonderfaelle!
 		 */
+		
+		//Sonderfall Null abfangen
+		if(mantisse == 0)
+		{
+			exponent = 0;
+			vorzeichen = false;
+		}
+		
+		
+		int bitMask = 0x80000000;
+		
+		//shifte mantisse bis 1 an erster stelle
+		while((this.mantisse & bitMask) == 0)
+		{
+			mantisse = mantisse << 1;
+			this.exponent--;//passe exponent entsprechend an
+		}
+		
+		
 	}
 
 	/**
