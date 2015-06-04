@@ -21,7 +21,7 @@ public class Crawler {
 
 	public Crawler(String outputFile, String[] startURLs, int maxCrawlDepth,
 			String URLfilter) {
-		outFile = outputFile;
+		outFile = "output.txt";
 		startPoints = startURLs;
 		maxDepth = maxCrawlDepth;
 		filter = URLfilter;
