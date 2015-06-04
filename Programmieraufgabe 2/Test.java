@@ -19,8 +19,8 @@ public class Test {
 						+ "Es dient einzig und allein als Rahmen zurleichteren Implementierung eigener Tests!");
 
 		boolean test_gauss = true;
-		boolean test_pagerank = true;
-		boolean test_crawler = true;
+		boolean test_pagerank = false;
+		boolean test_crawler = false;
 
 		double b[] = { 1, 1 };
 		double C[][] = { { 1, 0 }, { 0, 1 } };
